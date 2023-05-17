@@ -9,28 +9,42 @@ import pybullet_envs
 class JacoEnv(gym.Env):
     def __init__(self):
         # Initialize the environment here
-        pass
+        self.jaco = None  # Create Jaco robotic arm object
 
     def step(self, action):
         # Take a step in the environment
-        pass
+        # Apply the action to control the Jaco arm
+        self.jaco.set_action(action)
+        self.jaco.step_simulation()
+
+        # Get the current state, reward, and done flag
+        state = self.jaco.get_state()
+        reward = self.compute_reward(state)
+        done = self.check_termination(state)
+
+        return state, reward, done, {}
 
     def reset(self):
         # Reset the environment
-        pass
+        self.jaco.reset_simulation()
+        state = self.jaco.get_state()
+        return state
 
     def render(self):
         # Render the environment (optional)
-        pass
+        self.jaco.render()
+
 
 # Instantiate the Jaco environment and wrap it with DummyVecEnv
 env = DummyVecEnv([lambda: JacoEnv()])
 
 # Create the PPO agent and configure its hyperparameters
-model = PPO("MlpPolicy", env, device="cuda")
+model = PPO("MlpPolicy", env, device="cuda", verbose=1)
 
 # Train the agent
 model.learn(total_timesteps=100000)
 
 # Save the trained model
 model.save("jaco_model")
+
+
