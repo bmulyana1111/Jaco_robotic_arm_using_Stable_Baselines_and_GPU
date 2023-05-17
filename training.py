@@ -34,7 +34,6 @@ class JacoEnv(gym.Env):
         # Render the environment (optional)
         self.jaco.render()
 
-
 # Instantiate the Jaco environment and wrap it with DummyVecEnv
 env = DummyVecEnv([lambda: JacoEnv()])
 
